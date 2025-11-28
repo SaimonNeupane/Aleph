@@ -1,0 +1,31 @@
+# --- Python & Virtual Environments ---
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+.venv/
+
+# --- Django [cite: 24, 218] ---
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+
+# --- Environment Variables (Security) ---
+# Never commit secrets like DB credentials
+.env
+.env.*
+
+# --- Crawler Data  ---
+# If your crawler saves temp files, ignore them
+crawler/data/
+crawler/*.log
+
+# --- IDE & OS Files ---
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
