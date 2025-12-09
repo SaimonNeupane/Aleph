@@ -19,7 +19,7 @@ const SearchBar: React.FC = () => {
 
   return (
     <>
-      <div className="min-h-screen min-w-screen bg-[#d5d7db] flex flex-col items-center justify-center ">
+      <div className="min-h-screen min-w-screen bg-[url('/bg.jpg')]  bg-cover bg-center bg-no-repeat flex flex-col items-center justify-center ">
         <div className="absolute top-6 right-8 text-m font-bold  flex gap-4">
           <a
             href="https://mail.google.com"
@@ -53,10 +53,10 @@ const SearchBar: React.FC = () => {
         {/* Search Bar is created from here  */}
         <div className="w-full max-w-2xl mb-8">
           <div
-            className={`flex items-center bg-[#e2e4e9] rounded-full px-5 py-3 transition-all duration-200 ${
+            className={`flex items-center bg-trapnsparent rounded-full px-5 py-3 transition-all duration-200 ${
               isFocused
-                ? "shadow-lg shadow-black/40"
-                : "shadow-md shadow-black/20"
+                ? "shadow-lg shadow-black/80"
+                : "shadow-md shadow-black/40"
             } hover:shadow-lg hover:shadow-black/40`}
           >
             <Search className="text-gray-600 w-5 h-5 mr-3" />
@@ -115,6 +115,7 @@ const SearchBar: React.FC = () => {
             नेपाली
           </a>
         </div>
+
         <div className="absolute bottom-0">
           <Footer />
         </div>
