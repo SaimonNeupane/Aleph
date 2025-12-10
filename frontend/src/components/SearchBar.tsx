@@ -59,7 +59,7 @@ const SearchBar: React.FC = () => {
                 : "shadow-md shadow-black/40"
             } hover:shadow-lg hover:shadow-black/40`}
           >
-            <Search className="text-gray-600 w-5 h-5 mr-3" />
+            <Search className="text-gray-600 w-5 h-5 mr-3" />   
 
             <input
               type="text"
