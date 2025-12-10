@@ -6,9 +6,10 @@ from fake_useragent import UserAgent
 from parse_sitemap import parser
 from utils.utils import normalize
 from requests.utils import requote_uri
-
+from utils.seeder import execute_sql
 
 # def crawler(seed_url, max_n=500):
+# m
 #     ua = UserAgent()
 #     my_headers = {"User-Agent": ua.random}
 #     url_queue = deque([seed_url])
@@ -54,11 +55,13 @@ class Crawler:
     def crawl(self):
         while self.max_page > 0 and self.deque:
             url = self.deque.popleft()
+            query = "INSERT INTO search (url) VALUES(%s)"
             print(f"for the url {url}")
             response = requests.get(
                 requote_uri(url), headers={"User-Agent": self.get_headers()}
             )
             self.visited_urls.add(url)
+            execute_sql(query, (url,))
             # print(f"the response is {response.text}")
             soup = BeautifulSoup(response.text, "html.parser")
             a_tags = soup.find_all("a", href=True)
