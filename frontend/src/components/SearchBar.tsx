@@ -59,7 +59,7 @@ const SearchBar: React.FC = () => {
                 : "shadow-md shadow-black/40"
             } hover:shadow-lg hover:shadow-black/40`}
           >
-            <Search className="text-gray-600 w-5 h-5 mr-3" />   
+            <Search className="text-gray-600 w-5 h-5 mr-3" />
 
             <input
               type="text"
@@ -109,12 +109,12 @@ const SearchBar: React.FC = () => {
           </button>
         </div>
 
-        <div className="text-black-400 text-sm">
+        {/* <div className="text-black-400 text-sm">
           Aleph offered in:{" "}
           <a href="#" className="text-[#10336c] hover:underline">
             नेपाली
           </a>
-        </div>
+        </div> */}
 
         <div className="absolute bottom-0">
           <Footer />

@@ -58,9 +58,9 @@ const About: React.FC = () => {
       <div className="max-w-5xl mx-auto">
         {/* Header Card */}
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden mb-6">
-          <div className="bg-linear-to-r from-blue-600 to-indigo-600 px-8 py-12 text-center">
-            <h1 className="text-5xl font-bold text-white mb-3">About Aleph</h1>
-            <p className="text-blue-100 text-lg">
+          <div className="bg-linear-to-r from-gray-200 to-slate-300 px-8 py-12 text-center">
+            <h1 className="text-5xl font-bold text-black mb-3">About Aleph</h1>
+            <p className="text-black-100 text-lg">
               Your Trusted Search Companion
             </p>
           </div>
@@ -71,7 +71,7 @@ const About: React.FC = () => {
           {/* Mission Statement */}
           <div className="mb-12">
             <h2 className="text-3xl font-bold text-gray-800 mb-6 flex items-center gap-3">
-              <span className="w-1 h-8 bg-blue-600 rounded-full"></span>
+              <span className="w-1 h-8 bg-gray-600 rounded-full"></span>
               Our Mission
             </h2>
             <p className="text-gray-700 text-lg leading-relaxed mb-4">
@@ -84,8 +84,8 @@ const About: React.FC = () => {
 
           {/* Feature Cards */}
           <div className="grid md:grid-cols-3 gap-6 mb-12">
-            <div className="bg-linear-to-br from-blue-50 to-blue-100 rounded-xl p-6 border border-blue-200">
-              <div className="bg-blue-600 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
+            <div className="bg-linear-to-br from-gray-100 to-slate-100 rounded-xl p-6 border border-blue-200">
+              <div className="bg-indigo-600 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
                 <Shield className="w-6 h-6 text-white" />
               </div>
               <h3 className="text-xl font-semibold text-gray-800 mb-2">
@@ -97,7 +97,7 @@ const About: React.FC = () => {
               </p>
             </div>
 
-            <div className="bg-linear-to-br from-indigo-50 to-indigo-100 rounded-xl p-6 border border-indigo-200">
+            <div className="bg-linear-to-br from-slate-50 to-gray-100 rounded-xl p-6 border border-indigo-200">
               <div className="bg-indigo-600 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
                 <Zap className="w-6 h-6 text-white" />
               </div>
@@ -109,7 +109,7 @@ const About: React.FC = () => {
               </p>
             </div>
 
-            <div className="bg-linear-to-br from-purple-50 to-purple-100 rounded-xl p-6 border border-purple-200">
+            <div className="bg-linear-to-br from-slate-1000 to-gray-100 rounded-xl p-6 border border-purple-200">
               <div className="bg-purple-600 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
                 <Users className="w-6 h-6 text-white" />
               </div>

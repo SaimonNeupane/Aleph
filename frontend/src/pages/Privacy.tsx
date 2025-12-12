@@ -7,12 +7,12 @@ const Privacy: React.FC = () => {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="bg-white rounded-2xl shadow-lg overflow-hidden mb-6">
-          <div className="bg-linear-to-r from-emerald-600 to-teal-600 px-8 py-10 text-center">
-            <Shield className="w-16 h-16 text-white mx-auto mb-4" />
-            <h1 className="text-4xl font-bold text-white mb-2">
+          <div className="bg-linear-to-r from-gray-200 to-slate-300 px-8 py-10 text-center">
+            <Shield className="w-16 h-16 text-blue-700 mx-auto mb-4" />
+            <h1 className="text-4xl font-bold text-black mb-2">
               Privacy Policy
             </h1>
-            <p className="text-emerald-100">Your privacy is our priority</p>
+            <p className="text-black-100">Your privacy is our priority</p>
           </div>
         </div>
 
