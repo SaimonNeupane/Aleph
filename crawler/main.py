@@ -7,7 +7,7 @@ from parse_sitemap import parser
 from utils.utils import normalize
 from requests.utils import requote_uri
 from utils.seeder import execute_sql
-
+from utils.extractor import Frequency_Counter
 # def crawler(seed_url, max_n=500):
 # m
 #     ua = UserAgent()
@@ -61,9 +61,14 @@ class Crawler:
                 requote_uri(url), headers={"User-Agent": self.get_headers()}
             )
             self.visited_urls.add(url)
-            execute_sql(query, (url,))
             # print(f"the response is {response.text}")
             soup = BeautifulSoup(response.text, "html.parser")
+            text = soup.get_text()
+            counter = Frequency_Counter(text)
+            counter.extract_keywords()
+            print(counter.get_top_keywords())
+            execute_sql(query, (url,))
+
             a_tags = soup.find_all("a", href=True)
             for a in a_tags:
                 link = normalize(a["href"])
@@ -75,5 +80,5 @@ class Crawler:
             self.max_page -= 1
 
 
-ram = Crawler("https://saimonneupane.com.np")
+ram = Crawler("https://topscrape.com")
 ram.crawl()
