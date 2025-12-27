@@ -29,3 +29,6 @@ crawler/*.log
 .vscode/
 .DS_Store
 Thumbs.db
+data/*
+indexer/utils/__pycache__
+indexer/venv

@@ -1,5 +1,6 @@
 from urllib.parse import urlparse, urljoin, urlunparse
 from requests.utils import requote_uri
+from bs4 import BeautifulSoup
 
 # fmt: off
 subdomain_prefixes = [
@@ -60,3 +61,29 @@ def normalize(url):
     normalized_url = requote_uri(normalized_url)
 
     return normalized_url
+
+
+def write_keywords_to_file(url, text, id):
+    f = open(f"../data/{id}.txt", "w")
+    f.write(f"{url}\n{text}")
+    f.close()
+
+
+def handle_html(url, content, id):
+    soup = BeautifulSoup(content, "html.parser")
+    a_tags = soup.find_all("a", href=True)
+    p_tags = soup.find_all("p")
+    first_p = ""
+    for p in p_tags:
+        text = p.get_text(strip=True)
+        if text:
+            first_p = text
+            break
+    tokens = tokenize(first_p)
+    write_keywords_to_file(url, tokens, id)
+    return a_tags
+
+
+def tokenize(text):
+    tokens = text.split(" ")
+    return tokens

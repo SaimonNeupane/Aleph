@@ -6,6 +6,7 @@ from fake_useragent import UserAgent
 from parse_sitemap import parser
 from utils.utils import normalize
 from requests.utils import requote_uri
+from utils.utils import handle_html
 
 
 def crawler(seed_url, max_n=500):
@@ -13,6 +14,7 @@ def crawler(seed_url, max_n=500):
     my_headers = {"User-Agent": ua.random}
     url_queue = deque([seed_url])
     visited_urls = set()
+    id = 1
 
     while len(url_queue) != 0 and len(visited_urls) < max_n:
         leftmost_url = url_queue.popleft()
@@ -23,15 +25,14 @@ def crawler(seed_url, max_n=500):
         if res.status_code == 200:
             visited_urls.add(leftmost_url)
             html_content = res.text
-            soup = BeautifulSoup(html_content, "html.parser")
-            a_tags = soup.find_all("a", href=True)
+            a_tags = handle_html(leftmost_url, html_content, id)
             for a_tag in a_tags:
                 link = a_tag["href"]
                 link = urljoin(seed_url, link)
                 normalized = normalize(link)
                 if normalized:
                     url_queue.append(normalized)
-
+            id += 1
         else:
             print("error")
     print("done")
