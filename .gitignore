@@ -32,3 +32,6 @@ Thumbs.db
 data/*
 indexer/utils/__pycache__
 indexer/venv
+
+
+package-lock.json
