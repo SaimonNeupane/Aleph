@@ -1,14 +1,25 @@
 import React, { useState } from "react";
 import { Search, Mic, Camera, LayoutGrid } from "lucide-react";
 import Footer from "./Footer";
+import { useQuery } from "@tanstack/react-query";
+import { fetchQueries } from "../api/api";
 
 const SearchBar: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isFocused, setIsFocused] = useState(false);
+  const [enable, setEnable] = useState(false);
+
+  const { isPending, isError, error, data } = useQuery({
+    queryKey: ["results"],
+    queryFn: () => fetchQueries(searchQuery),
+    enabled: enable,
+  });
+
+  console.log(data);
 
   const handleSearch = () => {
     console.log("Searching for:", searchQuery);
-    // Handle search logic here
+    setEnable(true);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
