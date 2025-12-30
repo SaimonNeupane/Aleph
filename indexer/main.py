@@ -18,6 +18,7 @@ def indexer():
         Add(text[0], keywords, r)
         i += 1
         f.close()
+    r.close()
 
 
 if __name__ == "__main__":

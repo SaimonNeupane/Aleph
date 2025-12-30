@@ -34,6 +34,7 @@ func main() {
 		Password: cfg.DB.Password,
 		DB:       cfg.DB.DBName,
 	})
+	defer rdb.Close()
 
 	err := rdb.Set(context.Background(), "key", "value", 0).Err()
 
@@ -46,7 +47,7 @@ func main() {
 	fmt.Println(val)
 
 	mux.HandleFunc("/ping", Ping)
-	mux.HandleFunc("GET /api/query/{keywords}", QueryFunc(rdb))
+	mux.HandleFunc("GET /api/query/{keywords...}", QueryFunc(rdb))
 
 	serverString := fmt.Sprintf(":%v", cfg.Server.Port)
 	http.ListenAndServe(serverString, mux)
@@ -56,10 +57,11 @@ func QueryFunc(rdb *redis.Client) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		keywords := r.PathValue("keywords")
 		fmt.Println("you searched for", keywords)
-		res := strings.Split(keywords, " ")
+		res := strings.Fields(keywords)
+		res = search.ProcessKeywords(res)
 		fmt.Println(res)
-		websites := search.Search(res, rdb)
-		fmt.Println(websites)
+		ids := search.Search(res, rdb)
+		fmt.Println(ids)
 	}
 }
 

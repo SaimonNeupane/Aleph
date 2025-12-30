@@ -36,3 +36,4 @@ indexer/venv
 
 package-lock.json
 full_text_search/.env
+full_text_search/bin
