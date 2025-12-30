@@ -12,6 +12,15 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
+type Result []map[string]string
+
+type Resp struct {
+	Query  []string
+	Page   int
+	Limit  int
+	Result Result
+}
+
 func ProcessKeywords(k []string) []string {
 	var a []string
 	reg := regexp.MustCompile(`[^a-z0-9]`)
@@ -77,4 +86,34 @@ func Search(keys []string, rdb *redis.Client) []string {
 		}
 	}
 	return r
+}
+
+func Paginate(query []string, AllIds []string, limit int, page int, rdb *redis.Client) (*Resp, error) {
+	ResObj := &Resp{}
+	maxLen := len(AllIds)
+	offset := (page - 1) * limit
+	end := offset + limit
+	PaginatedIds := AllIds
+	if maxLen >= end {
+		PaginatedIds = AllIds[offset:end]
+	}
+	if len(PaginatedIds) > 0 {
+		urls, err := rdb.HMGet(context.Background(), "urlId", PaginatedIds...).Result()
+		if err != nil {
+			return nil, err
+		}
+
+		for i, id := range urls {
+			if urls[i] != nil {
+				ResObj.Result = append(ResObj.Result, map[string]string{
+					"id":  id.(string),
+					"url": urls[i].(string),
+				})
+			}
+		}
+	}
+	ResObj.Limit = limit
+	ResObj.Page = page
+	ResObj.Query = query
+	return ResObj, nil
 }

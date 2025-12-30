@@ -2,10 +2,12 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 
 	"github.com/SaimonNeupane/Aleph/full_text_search/config"
@@ -55,13 +57,32 @@ func main() {
 
 func QueryFunc(rdb *redis.Client) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		page, err := strconv.Atoi(r.URL.Query().Get("page"))
+		if err != nil || page < 1 {
+			page = 1
+		}
+		limit, err := strconv.Atoi(r.URL.Query().Get("limit"))
+		if err != nil || limit < 1 {
+			limit = 10
+		}
 		keywords := r.PathValue("keywords")
 		fmt.Println("you searched for", keywords)
 		res := strings.Fields(keywords)
 		res = search.ProcessKeywords(res)
 		fmt.Println(res)
-		ids := search.Search(res, rdb)
-		fmt.Println(ids)
+		AllIds := search.Search(res, rdb)
+		object, _ := search.Paginate(res, AllIds, limit, page, rdb)
+		fmt.Println(object)
+		fmt.Println(AllIds)
+		jsonObj, err := json.Marshal(object)
+		if err != nil {
+			fmt.Println("error while marshaling")
+		}
+		n, err := w.Write(jsonObj)
+		if err != nil {
+			fmt.Println("error writing response")
+		}
+		fmt.Println("wrote ", n, " bytes")
 	}
 }
 
