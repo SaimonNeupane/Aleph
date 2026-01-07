@@ -1,8 +1,13 @@
 from collections import Counter
 import string
+import re
 from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize
 import nltk
+
+try:
+    nltk.data.find("corpora/stopwords")
+except LookupError:
+    nltk.download("stopwords")
 
 stop_words = set(stopwords.words("english"))
 
@@ -13,14 +18,11 @@ class Frequency_Counter:
         self.words = []
 
     def extract_keywords(self):
-        # find , replace ,delete translation table ma
-        rule = str.maketrans("", "", string.punctuation)
-        cleared_text = self.text.lower().translate(rule)
-        print(cleared_text)
-        tokens = word_tokenize(cleared_text)
-        words = [word for word in tokens if word not in stop_words]
-        self.words = words[:]
+        text = self.text.lower().translate(str.maketrans("", "", string.punctuation))
+
+        tokens = re.findall(r"[a-z]{3,}", text)
+
+        self.words = [w for w in tokens if w not in stop_words]
 
     def get_top_keywords(self):
-        dictt = Counter(self.words)
-        return dictt.most_common(10)
+        return Counter(self.words).most_common(10)
