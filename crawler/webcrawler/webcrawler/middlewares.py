@@ -98,3 +98,27 @@ class WebcrawlerDownloaderMiddleware:
 
     def spider_opened(self, spider):
         spider.logger.info("Spider opened: %s" % spider.name)
+
+
+from fp.fp import FreeProxy
+
+
+class FreeProxyMiddleware:
+    def __init__(self):
+        self.proxy = None
+        self.refresh_proxy()
+
+    def refresh_proxy(self):
+        try:
+            self.proxy = FreeProxy(rand=True, timeout=1).get()
+            print(f"Using proxy: {self.proxy}")
+        except:
+            self.proxy = None
+
+    def process_request(self, request, spider):
+        if self.proxy:
+            request.meta["proxy"] = self.proxy
+
+    def process_exception(self, request, exception, spider):
+        # Get new proxy on failure
+        self.refresh_proxy()

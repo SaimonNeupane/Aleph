@@ -11,6 +11,7 @@
 
 import sys
 import os.path
+import random
 
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 sys.path = sys.path + [
@@ -20,8 +21,23 @@ sys.path = sys.path + [
 
 BOT_NAME = "webcrawler"
 
+DOWNLOADER_MIDDLEWARES = {
+    "webcrawler.middlewares.FreeProxyMiddleware": 350,
+}
+
 SPIDER_MODULES = ["webcrawler.spiders"]
 NEWSPIDER_MODULE = "webcrawler.spiders"
+
+# Rotate user agents
+USER_AGENT_LIST = [
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+]
+
+
+USER_AGENT = random.choice(USER_AGENT_LIST)
+
 
 # List approved starting URLs to be crawled by BroadCrawler
 # Place specific domains before www.ubc.ca
