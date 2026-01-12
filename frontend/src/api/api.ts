@@ -1,6 +1,14 @@
 import axios from "axios";
 
-export async function fetchQueries(keywords: string) {
-  const res = await axios.get(`http://localhost:8080/api/query/${keywords}`);
-  return res.data;
+
+const BaseUrl = axios.create(
+  {
+    baseURL: "http://localhost:8000",
+  }
+)
+
+export const requestQuery = async (query: string) => {
+  const response = await BaseUrl.get(`/?q=${encodeURIComponent(query)}`)
+  return response.data
 }
+

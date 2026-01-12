@@ -2,24 +2,27 @@ import React, { useState } from "react";
 import { Search, Mic, Camera, LayoutGrid } from "lucide-react";
 import Footer from "./Footer";
 import { useQuery } from "@tanstack/react-query";
-import { fetchQueries } from "../api/api";
+import { requestQuery } from "../api/api";
 
 const SearchBar: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isFocused, setIsFocused] = useState(false);
-  const [enable, setEnable] = useState(false);
 
-  const { isPending, isError, error, data } = useQuery({
+
+
+
+  const { isLoading, isError, refetch, error, data } = useQuery({
     queryKey: ["results"],
-    queryFn: () => fetchQueries(searchQuery),
-    enabled: enable,
+    queryFn: () => requestQuery(searchQuery),
+    enabled: false
   });
 
   console.log(data);
 
   const handleSearch = () => {
     console.log("Searching for:", searchQuery);
-    setEnable(true);
+    refetch()
+
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -27,8 +30,10 @@ const SearchBar: React.FC = () => {
       handleSearch();
     }
   };
-
   return (
+
+
+
     <>
       <div className="min-h-screen min-w-screen bg-[url('/bg.jpg')]  bg-cover bg-center bg-no-repeat flex flex-col items-center justify-center ">
         <div className="absolute top-6 right-8 text-m font-bold  flex gap-4">
@@ -38,7 +43,7 @@ const SearchBar: React.FC = () => {
             rel="noopener noreferrer"
             className="hover:underline"
           >
-            Gmail
+            gmail
           </a>
           <a
             href="https://classroom.google.com/"
@@ -46,31 +51,35 @@ const SearchBar: React.FC = () => {
             rel="noopener noreferrer"
             className="hover:underline"
           >
-            Classroom
+            classroom
           </a>
           <div>
             <LayoutGrid />
           </div>
         </div>
         {/* <div className="absolute top-6 left-8 text-m font-bold  cursor-pointer">
-        <TextAlignJustify />
+        <textalignjustify />
       </div> */}
         <div className="mb-8">
           <h1 className="text-black text-7xl font-light tracking-tight">
-            Aleph
+            aleph
           </h1>
         </div>
 
-        {/* Search Bar is created from here  */}
+        {/* search bar is created from here  */}
         <div className="w-full max-w-2xl mb-8">
+
+          {isLoading && <p>loadin</p>}
+          {data && data.map((e: any) => (
+            <p>{e.url}</p>
+          ))}
           <div
-            className={`flex items-center bg-trapnsparent rounded-full px-5 py-3 transition-all duration-200 ${
-              isFocused
-                ? "shadow-lg shadow-black/80"
-                : "shadow-md shadow-black/40"
-            } hover:shadow-lg hover:shadow-black/40`}
+            className={`flex items-center bg-transparent rounded-full px-5 py-3 transition-all duration-200 ${isFocused
+              ? "shadow-lg shadow-black/80"
+              : "shadow-md shadow-black/40"
+              } hover:shadow-lg hover:shadow-black/40`}
           >
-            <Search className="text-gray-600 w-5 h-5 mr-3" />
+            <search className="text-gray-600 w-5 h-5 mr-3" />
 
             <input
               type="text"
@@ -87,7 +96,7 @@ const SearchBar: React.FC = () => {
               <button
                 type="button"
                 className="text-gray-600 hover:text-black transition-colors p-1"
-                aria-label="Voice search"
+                aria-label="voice search"
               >
                 <Mic className="w-5 h-5" />
               </button>
@@ -95,7 +104,7 @@ const SearchBar: React.FC = () => {
               <button
                 type="button"
                 className="text-gray-600 hover:text-black transition-colors p-1"
-                aria-label="Search by image"
+                aria-label="search by image"
               >
                 <Camera className="w-5 h-5" />
               </button>
@@ -109,28 +118,29 @@ const SearchBar: React.FC = () => {
             onClick={handleSearch}
             className="bg-[#303134] text-gray-300 px-6 py-3 rounded hover:bg-[#3c4043] hover:border hover:border-gray-600 transition-all text-sm"
           >
-            Aleph Search
+            aleph search
           </button>
 
           <button
             type="button"
             className="bg-[#303134] text-gray-300 px-6 py-3 rounded hover:bg-[#3c4043] hover:border hover:border-gray-600 transition-all text-sm"
           >
-            Whats New
+            whats new
           </button>
         </div>
 
         {/* <div className="text-black-400 text-sm">
-          Aleph offered in:{" "}
+          aleph offered in:{" "}
           <a href="#" className="text-[#10336c] hover:underline">
             नेपाली
           </a>
         </div> */}
 
         <div className="absolute bottom-0">
-          <Footer />
+          <footer />
         </div>
       </div>
+
     </>
   );
 };
