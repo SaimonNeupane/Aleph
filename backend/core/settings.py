@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "api",
     "django.contrib.postgres",
     "rest_framework",
+    "crawler",
 ]
 
 MIDDLEWARE = [

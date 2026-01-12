@@ -19,7 +19,7 @@ class WebPage(models.Model):
     class Meta:
         indexes = [
             GinIndex(fields=["search_vector"]),
-            models.Index(fields="content_hash", name="contetn-hash-index"),
+            models.Index(fields=["content_hash"], name="contetn-hash-index"),
         ]
 
     def save(self, *args, **kwargs):

@@ -4,8 +4,7 @@ conn = None
 
 
 def get_db_connection():
-    try:
-        conn = psycopg2.connect(
+    try: conn = psycopg2.connect(
             host="localhost",
             database="search_engine",
             user="saimon",
