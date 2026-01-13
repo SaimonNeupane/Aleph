@@ -1,27 +1,24 @@
 import React, { useState } from "react";
 import { Search, Mic, Camera, LayoutGrid } from "lucide-react";
 import Footer from "./Footer";
-import { useQuery } from "@tanstack/react-query";
 import { requestQuery } from "../api/api";
+import { useNavigate } from "react-router-dom";
 
 const SearchBar: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isFocused, setIsFocused] = useState(false);
+  const navigate = useNavigate()
 
 
 
 
-  const { isLoading, isError, refetch, error, data } = useQuery({
-    queryKey: ["results"],
-    queryFn: () => requestQuery(searchQuery),
-    enabled: false
-  });
 
-  console.log(data);
 
   const handleSearch = () => {
     console.log("Searching for:", searchQuery);
-    refetch()
+    if (searchQuery.trim()) {
+      navigate(`/search/?q=${encodeURIComponent(searchQuery)}`)
+    }
 
   };
 
@@ -69,10 +66,6 @@ const SearchBar: React.FC = () => {
         {/* search bar is created from here  */}
         <div className="w-full max-w-2xl mb-8">
 
-          {isLoading && <p>loadin</p>}
-          {data && data.map((e: any) => (
-            <p>{e.url}</p>
-          ))}
           <div
             className={`flex items-center bg-transparent rounded-full px-5 py-3 transition-all duration-200 ${isFocused
               ? "shadow-lg shadow-black/80"
@@ -139,6 +132,7 @@ const SearchBar: React.FC = () => {
         <div className="absolute bottom-0">
           <footer />
         </div>
+
       </div>
 
     </>

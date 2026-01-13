@@ -5,6 +5,7 @@ import About from "./pages/About";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import AlephSettings from "./pages/AlephSettings";
+import { SearchResults } from "./pages/SearchResult";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route path="/pages/privacy" element={<Privacy />} />
           <Route path="/pages/terms" element={<Terms />} />
           <Route path="/pages/settings" element={<AlephSettings />} />
+          <Route path="/search" element={<SearchResults />} />
         </Routes>
       </Router>
     </>
