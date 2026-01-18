@@ -1,4 +1,5 @@
 from django.shortcuts import render
+import socket
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from .models import WebPage
@@ -10,6 +11,8 @@ from django.db.models import F
 # Create your views here.
 @api_view(["GET"])
 def Search(request):
+    hostname = socket.gethostname()
+    print(f"Served by {hostname}")
     query = request.query_params.get("q")
     print(query)
     if not query:

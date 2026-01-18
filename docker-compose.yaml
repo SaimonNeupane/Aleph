@@ -2,25 +2,40 @@ services:
   frontend:
     build: ./frontend
     ports:
-      - 5173
+      - :5173
     volumes:
       - ./frontend:/usr/src/app
       - /usr/src/app/node_modules
   backend:
     build: ./backend
-    ports:
-      - 8000:8000
+    environment:
+      - PYTHONUNBUFFERED=1
     volumes:
       - ./backend:/usr/src/app
+    depends_on:
+      - database
   nginx:
     image: nginx
     depends_on:
       - backend
       - frontend
     ports:
-      - 8080:80
+      - "8080:80"
     volumes:
       - ./nginx/dev.conf:/etc/nginx/nginx.conf:ro
+  database:
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: 26494504
+      POSTGRES_USER: saimon
+      POSTGRES_DB: search_engine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
     
 
  
