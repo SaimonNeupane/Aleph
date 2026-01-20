@@ -86,7 +86,7 @@ DATABASES = {
         "NAME": "search_engine",
         "USER": "saimon",
         "PASSWORD": "26494504",
-        "HOST": "localhost",
+        "HOST": "database",
         "PORT": "5432",
     }
 }

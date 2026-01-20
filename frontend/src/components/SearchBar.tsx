@@ -7,19 +7,15 @@ import { useNavigate } from "react-router-dom";
 const SearchBar: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isFocused, setIsFocused] = useState(false);
-  const navigate = useNavigate()
-
-
-
-
-
+  const navigate = useNavigate();
 
   const handleSearch = () => {
     console.log("Searching for:", searchQuery);
     if (searchQuery.trim()) {
-      navigate(`/search/?q=${encodeURIComponent(searchQuery)}`)
+      navigate(`/search/?q=${encodeURIComponent(searchQuery)}`, {
+        state: { query: searchQuery },
+      });
     }
-
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -28,14 +24,10 @@ const SearchBar: React.FC = () => {
     }
   };
   return (
-
-
-
     <>
       <div className="min-h-screen min-w-screen bg-[url('/bg.jpg')]  bg-cover bg-center bg-no-repeat flex flex-col items-center justify-center ">
         <div className="absolute top-6 right-8 text-m font-bold  flex gap-4">
-          <a
-            href="https://mail.google.com"
+        <a href="https://mail.google.com"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:underline"
@@ -65,12 +57,12 @@ const SearchBar: React.FC = () => {
 
         {/* search bar is created from here  */}
         <div className="w-full max-w-2xl mb-8">
-
           <div
-            className={`flex items-center bg-transparent rounded-full px-5 py-3 transition-all duration-200 ${isFocused
-              ? "shadow-lg shadow-black/80"
-              : "shadow-md shadow-black/40"
-              } hover:shadow-lg hover:shadow-black/40`}
+            className={`flex items-center bg-transparent rounded-full px-5 py-3 transition-all duration-200 ${
+              isFocused
+                ? "shadow-lg shadow-black/80"
+                : "shadow-md shadow-black/40"
+            } hover:shadow-lg hover:shadow-black/40`}
           >
             <search className="text-gray-600 w-5 h-5 mr-3" />
 
@@ -132,9 +124,7 @@ const SearchBar: React.FC = () => {
         <div className="absolute bottom-0">
           <footer />
         </div>
-
       </div>
-
     </>
   );
 };
