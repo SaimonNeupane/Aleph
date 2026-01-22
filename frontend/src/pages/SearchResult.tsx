@@ -5,6 +5,7 @@ import { useSearchParams } from "react-router-dom";
 import { requestQuery } from "../api/api";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useLocation } from "react-router-dom";
+import { Mic, Camera } from "lucide-react";
 
 interface SearchResultItem {
   url: string;
@@ -21,6 +22,7 @@ export const SearchResults: React.FC = () => {
   const resultsPerPage = 10;
   const searchQueryValue = location.state;
   const [searchQuery, setSearchQuery] = useState(searchQueryValue?.query || "");
+  const [isFocused, setIsFocused] = useState(false);
 
   console.log("searchQueryValue:", searchQuery);
   const { data, isLoading, isError } = useQuery({
@@ -32,15 +34,15 @@ export const SearchResults: React.FC = () => {
     console.log("Searching for:", searchQuery);
     if (searchQuery.trim()) {
       navigate(`/search/?q=${encodeURIComponent(searchQuery)}`, {
-        state: { query: searchQueryValue },
+        state: { query: searchQuery },
       });
     }
   };
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
   };
 
-  const handleKeyPress = (e) => {
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       handleSearch();
     }
@@ -124,7 +126,7 @@ export const SearchResults: React.FC = () => {
     <div className="min-h-screen bg-gray-50 py-6">
       <div className="max-w-3xl mx-auto px-4">
         {/* Results count */}
-        <div>
+        {/* <div>
           <input
             type="text"
             name=""
@@ -135,11 +137,50 @@ export const SearchResults: React.FC = () => {
               handleChange(e);
             }}
           />
-        </div>
+        </div> */}{" "}
         <div className="mb-6 text-sm text-gray-600">
           About {data.length} results for "{query}"
         </div>
+        <div className="w-full max-w-2xl mb-8">
+          <div
+            className={`flex items-center bg-transparent rounded-full px-5 py-3 transition-all duration-200 ${
+              isFocused
+                ? "shadow-lg shadow-black/80"
+                : "shadow-md shadow-black/40"
+            } hover:shadow-lg hover:shadow-black/40`}
+          >
+            <search className="text-gray-600 w-5 h-5 mr-3" />
 
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => handleChange(e)}
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setIsFocused(false)}
+              onKeyDown={handleKeyPress}
+              className="flex-1 bg-transparent text-black outline-none placeholder-gray-400 text-base"
+              placeholder=""
+            />
+
+            <div className="flex items-center gap-3 ml-3">
+              <button
+                type="button"
+                className="text-gray-600 hover:text-black transition-colors p-1"
+                aria-label="voice search"
+              >
+                <Mic className="w-5 h-5" />
+              </button>
+
+              <button
+                type="button"
+                className="text-gray-600 hover:text-black transition-colors p-1"
+                aria-label="search by image"
+              >
+                <Camera className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+        </div>
         {/* Search results */}
         <div className="space-y-6">
           {currentResults.map((item: SearchResultItem, idx: number) => (
@@ -164,7 +205,6 @@ export const SearchResults: React.FC = () => {
             </div>
           ))}
         </div>
-
         {/* Pagination controls */}
         {totalPages > 1 && (
           <div className="mt-8 mb-4">
