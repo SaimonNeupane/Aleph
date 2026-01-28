@@ -9,7 +9,7 @@ from api.models import WebPage
 
 class Crawler:
     def __init__(self, max_page=500):
-        self.deque = deque(["https://ku.edu.np"])
+        self.deque = deque(['https://en.wikipedia.org/wiki/Kathmandu_University'])
         self.visited_urls = set()
         self.max_page = max_page
 

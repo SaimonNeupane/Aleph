@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Search, Mic, Camera, LayoutGrid } from "lucide-react";
+import { Mic, Camera, LayoutGrid, History } from "lucide-react";
 import Footer from "./Footer";
 import { requestQuery } from "../api/api";
 import { useNavigate } from "react-router-dom";
@@ -23,11 +23,16 @@ const SearchBar: React.FC = () => {
       handleSearch();
     }
   };
+
+  const handleOpenHistory = () => {
+    navigate("/history");
+  };
   return (
     <>
       <div className="min-h-screen min-w-screen bg-[url('/bg.jpg')]  bg-cover bg-center bg-no-repeat flex flex-col items-center justify-center ">
         <div className="absolute top-6 right-8 text-m font-bold  flex gap-4">
-        <a href="https://mail.google.com"
+          <a
+            href="https://mail.google.com"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:underline"
@@ -42,8 +47,16 @@ const SearchBar: React.FC = () => {
           >
             classroom
           </a>
-          <div>
-            <LayoutGrid />
+
+          <div className="flex flex-col gap-2">
+            <button
+              onClick={handleOpenHistory}
+              className="flex items-center gap-2 font-bold cursor-pointer
+                 hover:underline transition-colors"
+            >
+              <History className="w-5 h-5" />
+              <span>History</span>
+            </button>
           </div>
         </div>
         {/* <div className="absolute top-6 left-8 text-m font-bold  cursor-pointer">
@@ -122,7 +135,7 @@ const SearchBar: React.FC = () => {
         </div> */}
 
         <div className="absolute bottom-0">
-          <footer />
+          <Footer />
         </div>
       </div>
     </>

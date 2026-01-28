@@ -4,8 +4,9 @@ import SearchBar from "./components/SearchBar";
 import About from "./pages/About";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
-import AlephSettings from "./pages/AlephSettings";
+// import AlephSettings from "./pages/AlephSettings";
 import { SearchResults } from "./pages/SearchResult";
+import { SearchHistory } from "./components/searchHistory";
 
 function App() {
   return (
@@ -16,8 +17,9 @@ function App() {
           <Route path="/pages/about" element={<About />} />
           <Route path="/pages/privacy" element={<Privacy />} />
           <Route path="/pages/terms" element={<Terms />} />
-          <Route path="/pages/settings" element={<AlephSettings />} />
+          {/* <Route path="/pages/settings" element={<AlephSettings />} /> */}
           <Route path="/search" element={<SearchResults />} />
+          <Route path="/history" element={<SearchHistory />} />
         </Routes>
       </Router>
     </>

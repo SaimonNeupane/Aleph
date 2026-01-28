@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
 import { requestQuery } from "../api/api";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, History } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { Mic, Camera } from "lucide-react";
 
@@ -12,6 +12,14 @@ interface SearchResultItem {
   title: string;
   content: string;
 }
+
+interface SearchHistoryItem {
+  query: string;
+  timestamp: number;
+}
+
+const STORAGE_KEY = "search_history";
+const MAX_HISTORY_ITEMS = 10;
 
 export const SearchResults: React.FC = () => {
   const location = useLocation();
@@ -24,12 +32,50 @@ export const SearchResults: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState(searchQueryValue?.query || "");
   const [isFocused, setIsFocused] = useState(false);
 
+  // Add current query to history when query changes
+  useEffect(() => {
+    if (query) {
+      addToHistory(query);
+      setSearchQuery(query);
+    }
+  }, [query]);
+
+  const addToHistory = (searchQuery: string) => {
+    if (!searchQuery.trim()) return;
+
+    const stored = localStorage.getItem(STORAGE_KEY);
+    let history: SearchHistoryItem[] = [];
+
+    if (stored) {
+      try {
+        history = JSON.parse(stored);
+      } catch (error) {
+        console.error("Error parsing search history:", error);
+      }
+    }
+
+    const filtered = history.filter((item) => item.query !== searchQuery);
+    const updated = [
+      { query: searchQuery, timestamp: Date.now() },
+      ...filtered,
+    ].slice(0, MAX_HISTORY_ITEMS);
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
+  };
+
+  const handleOpenHistory = () => {
+    // Open history page in new tab
+    window.open("/history", "_blank");
+  };
+
   console.log("searchQueryValue:", searchQuery);
+
   const { data, isLoading, isError } = useQuery({
     queryKey: ["result", query],
     queryFn: () => requestQuery(query),
     enabled: true,
   });
+
   const handleSearch = () => {
     console.log("Searching for:", searchQuery);
     if (searchQuery.trim()) {
@@ -38,6 +84,7 @@ export const SearchResults: React.FC = () => {
       });
     }
   };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value);
   };
@@ -47,6 +94,7 @@ export const SearchResults: React.FC = () => {
       handleSearch();
     }
   };
+
   if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-gray-50">
@@ -124,23 +172,24 @@ export const SearchResults: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 py-6">
-      <div className="max-w-3xl mx-auto px-4">
+      <div className="absolute top-6 right-10 px-4">
+        <div className="flex flex-col gap-2">
+          <button
+            onClick={handleOpenHistory}
+            className="flex items-center gap-2 font-semibold cursor-pointer
+                 hover:underline transition-colors"
+          >
+            <History className="w-5 h-5" />
+            <span>History</span>
+          </button>
+        </div>
+      </div>
+      <div className="max-w-3xl mx-auto px-4 relative">
         {/* Results count */}
-        {/* <div>
-          <input
-            type="text"
-            name=""
-            onKeyDown={handleKeyPress}
-            id=""
-            value={searchQuery}
-            onChange={(e) => {
-              handleChange(e);
-            }}
-          />
-        </div> */}{" "}
         <div className="mb-6 text-sm text-gray-600">
           About {data.length} results for "{query}"
         </div>
+
         <div className="w-full max-w-2xl mb-8">
           <div
             className={`flex items-center bg-transparent rounded-full px-5 py-3 transition-all duration-200 ${
@@ -181,6 +230,7 @@ export const SearchResults: React.FC = () => {
             </div>
           </div>
         </div>
+
         {/* Search results */}
         <div className="space-y-6">
           {currentResults.map((item: SearchResultItem, idx: number) => (
@@ -205,6 +255,7 @@ export const SearchResults: React.FC = () => {
             </div>
           ))}
         </div>
+
         {/* Pagination controls */}
         {totalPages > 1 && (
           <div className="mt-8 mb-4">
