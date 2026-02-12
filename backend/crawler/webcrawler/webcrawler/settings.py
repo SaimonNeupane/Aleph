@@ -1,0 +1,198 @@
+# -*- coding: utf-8 -*-
+
+# webcrawler/settings.py
+import os
+import sys
+import django
+
+# 1. Add your Django project root to the python path
+# Change "backend" to the name of the folder containing manage.py if different
+sys.path.append(os.path.dirname(os.path.abspath(".")))
+
+# 2. Point to your django settings file
+# Change "config.settings" to your actual settings path (e.g., "myproject.settings")
+os.environ["DJANGO_SETTINGS_MODULE"] = "core.settings"
+
+# 3. Setup Django
+django.setup()
+
+# --- Your existing settings below ---
+BOT_NAME = "webcrawler"
+SPIDER_MODULES = ["webcrawler.spiders"]
+NEWSPIDER_MODULE = "webcrawler.spiders"
+
+# Use the Django-compatible pipeline
+ITEM_PIPELINES = {
+    "webcrawler.pipelines.DjangoWriterPipeline": 300,
+}
+
+# Be polite to servers (and your database)
+CONCURRENT_REQUESTS = 16
+DOWNLOAD_DELAY = 0.5
+ROBOTSTXT_OBEY = False
+# Scrapy settings for courses_scraper project
+#
+# For simplicity, this file contains only settings considered important or
+# commonly used. You can find more settings consulting the documentation:
+#
+#     http://doc.scrapy.org/en/latest/topics/settings.html
+#     http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
+#     http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
+
+import sys
+import os.path
+import random
+
+PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
+sys.path = sys.path + [
+    os.path.join(PROJECT_ROOT, "../../.."),
+    os.path.join(PROJECT_ROOT, "../.."),
+]
+
+BOT_NAME = "webcrawler"
+
+# DOWNLOADER_MIDDLEWARES = {
+#     "webcrawler.middlewares.FreeProxyMiddleware": 350,
+# }
+
+SPIDER_MODULES = ["webcrawler.spiders"]
+NEWSPIDER_MODULE = "webcrawler.spiders"
+
+# Rotate user agents
+USER_AGENT_LIST = [
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36",
+]
+
+
+USER_AGENT = random.choice(USER_AGENT_LIST)
+
+
+# List approved starting URLs to be crawled by BroadCrawler
+# Place specific domains before www.ubc.ca
+PARENT_URLS = [
+    "https://mofa.gov.np/",
+    "https://www.nrb.org.np/",
+    "https://tu.edu.np/",
+    "https://ku.edu.np/",
+]
+
+# Configure item pipelines
+ITEM_PIPELINES = {
+    "webcrawler.pipelines.SearchEnginePipeline": 300,
+}
+
+# Additional performance settings for database operations
+CONCURRENT_REQUESTS = 16  # Reduce from 100 to avoid overwhelming DB
+DOWNLOAD_DELAY = 0.5  # Add small delay to be respectful
+AUTOTHROTTLE_ENABLED = True
+AUTOTHROTTLE_START_DELAY = 0.5
+AUTOTHROTTLE_MAX_DELAY = 3
+AUTOTHROTTLE_TARGET_CONCURRENCY = 2.0
+
+
+# Crawl responsibly by identifying yourself (and your website) on the user-agent
+# USER_AGENT = 'courses_scraper (+http://www.yourdomain.com)'
+
+### Custom Settings:
+
+# Process lower depth requests first
+DEPTH_PRIORITY = 50
+
+# Obey robots.txt rules
+ROBOTSTXT_OBEY = False
+
+# Enable SSL Handshakes
+# DOWNLOADER_CLIENTCONTEXTFACTORY = "webcrawler.customcontext.CustomContextFactory"
+
+# Built-in Logging Level (alternatively use DEBUG outside production)
+LOG_LEVEL = "INFO"
+
+# Configure maximum concurrent requests performed by Scrapy (default: 16)
+CONCURRENT_REQUESTS = 100
+
+# Increase max thread pool size for DNS queries
+REACTOR_THREADPOOL_MAXSIZE = 20
+
+# Disable retrying failed HTTP requests (ie for slow websites)
+# RETRY_ENABLED = False
+
+# Reduce download timeout to discard stuck requests quickly
+DOWNLOAD_TIMEOUT = 15
+
+# EXPERIMENTAL: We shouldn't have to follow redirects
+# REDIRECT_ENABLED = False
+
+# EXPERIMENTAL: Ajax Crawlable Pages are rare but apparently can help
+# crawl certain web pages faster. Could have both positive and negative
+# performance ramifications
+# https://doc.scrapy.org/en/latest/topics/broad-crawls.html#enable-crawling-of-ajax-crawlable-pages
+AJAXCRAWL_ENABLED = True
+
+# Disable cookies (enabled by default)
+COOKIES_ENABLED = False
+
+# Configure item pipelines
+# See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
+# ITEM_PIPELINES = {
+#    'scraper.pipelines.SolrPipeline': 300,
+# }
+
+### Scrapy Defaults and Other Options:
+
+# Configure a delay for requests for the same website (default: 0)
+# See http://scrapy.readthedocs.org/en/latest/topics/settings.html#download-delay
+# See also autothrottle settings and docs
+# DOWNLOAD_DELAY = 3
+# The download delay setting will honor only one of:
+# CONCURRENT_REQUESTS_PER_DOMAIN = 16
+# CONCURRENT_REQUESTS_PER_IP = 16
+
+# Disable Telnet Console (enabled by default)
+# TELNETCONSOLE_ENABLED = False
+
+# Override the default request headers:
+# DEFAULT_REQUEST_HEADERS = {
+#   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+#   'Accept-Language': 'en',
+# }
+
+# Enable or disable spider middlewares
+# See http://scrapy.readthedocs.org/en/latest/topics/spider-middleware.html
+# SPIDER_MIDDLEWARES = {
+#    'courses_scraper.middlewares.CoursesScraperSpiderMiddleware': 543,
+# }
+
+# Enable or disable downloader middlewares
+# See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html
+# DOWNLOADER_MIDDLEWARES = {
+#    'courses_scraper.middlewares.MyCustomDownloaderMiddleware': 543,
+# }
+
+# Enable or disable extensions
+# See http://scrapy.readthedocs.org/en/latest/topics/extensions.html
+# EXTENSIONS = {
+#    'scrapy.extensions.telnet.TelnetConsole': None,
+# }
+
+# Enable and configure the AutoThrottle extension (disabled by default)
+# See http://doc.scrapy.org/en/latest/topics/autothrottle.html
+# AUTOTHROTTLE_ENABLED = True
+# The initial download delay
+# AUTOTHROTTLE_START_DELAY = 5
+# The maximum download delay to be set in case of high latencies
+# AUTOTHROTTLE_MAX_DELAY = 60
+# The average number of requests Scrapy should be sending in parallel to
+# each remote server
+# AUTOTHROTTLE_TARGET_CONCURRENCY = 1.0
+# Enable showing throttling stats for every response received:
+# AUTOTHROTTLE_DEBUG = False
+
+# Enable and configure HTTP caching (disabled by default)
+# See http://scrapy.readthedocs.org/en/latest/topics/downloader-middleware.html#httpcache-middleware-settings
+# HTTPCACHE_ENABLED = True
+# HTTPCACHE_EXPIRATION_SECS = 0
+# HTTPCACHE_DIR = 'httpcache'
+# HTTPCACHE_IGNORE_HTTP_CODES = []
+# HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
