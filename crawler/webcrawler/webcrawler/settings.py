@@ -21,9 +21,9 @@ sys.path = sys.path + [
 
 BOT_NAME = "webcrawler"
 
-DOWNLOADER_MIDDLEWARES = {
-    "webcrawler.middlewares.FreeProxyMiddleware": 350,
-}
+# DOWNLOADER_MIDDLEWARES = {
+#     "webcrawler.middlewares.FreeProxyMiddleware": 350,
+# }
 
 SPIDER_MODULES = ["webcrawler.spiders"]
 NEWSPIDER_MODULE = "webcrawler.spiders"
@@ -42,8 +42,10 @@ USER_AGENT = random.choice(USER_AGENT_LIST)
 # List approved starting URLs to be crawled by BroadCrawler
 # Place specific domains before www.ubc.ca
 PARENT_URLS = [
+    "https://mofa.gov.np/",
+    "https://www.nrb.org.np/",
+    "https://tu.edu.np/",
     "https://ku.edu.np/",
-    "https://www.reddit.com/r/KathmanduUniversity/",
 ]
 
 # Configure item pipelines

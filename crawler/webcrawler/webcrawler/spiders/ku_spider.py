@@ -7,23 +7,27 @@ from datetime import datetime
 
 
 class KUSpider(CrawlSpider):
-    name = "ku_spider"
+    name = "np_spider"
 
-    allowed_domains = ["ku.edu.np", "reddit.com"]
+    # IMPORTANT: only base TLD, not specific sites
+    allowed_domains = ["np"]
+
     start_urls = [
+        "https://nepal.gov.np/",
+        "https://gov.np/",
+        "https://edu.np/",
+        "https://tu.edu.np/",
         "https://ku.edu.np/",
-        "https://www.reddit.com/r/KathmanduUniversity/",
     ]
 
-    # Define rules for following links
     rules = (
         Rule(
             LinkExtractor(
-                allow_domains=allowed_domains,
+                allow=r"https?://([^/]+\.)*np(/|$)",
                 deny=(
-                    r"/.*\.(pdf|jpg|jpeg|png|gif|zip|rar|exe|dmg)$",  # Skip binary files
-                    r"/wp-admin/",  # Skip admin pages
-                    r"/wp-content/",  # Skip static content
+                    r"/.*\.(pdf|jpg|jpeg|png|gif|zip|rar|exe|dmg)$",
+                    r"/wp-admin/",
+                    r"/wp-content/",
                 ),
             ),
             callback="parse_page",
@@ -31,28 +35,29 @@ class KUSpider(CrawlSpider):
         ),
     )
 
+    def is_np_domain(self, url: str) -> bool:
+        hostname = urlparse(url).hostname
+        return hostname is not None and hostname.endswith(".np")
+
     def parse_page(self, response):
-        """Parse each page and extract content and links"""
+        # Safety check after redirects
+        if not self.is_np_domain(response.url):
+            return
 
-        # Extract text content
+        # Extract visible text
         content = " ".join(response.xpath("//body//text()").getall())
-        content = " ".join(content.split())  # Normalize whitespace
+        content = " ".join(content.split())
 
-        # Extract all links on the page
         links = []
-        for link in response.xpath("//a/@href").getall():
-            absolute_url = urljoin(response.url, link)
-            parsed = urlparse(absolute_url)
-
-            # Only keep links from allowed domains
-            if any(domain in parsed.netloc for domain in self.allowed_domains):
+        for href in response.xpath("//a/@href").getall():
+            absolute_url = urljoin(response.url, href)
+            if self.is_np_domain(absolute_url):
                 links.append(absolute_url)
 
-        # Create and yield item
         item = PageItem()
         item["url"] = response.url
         item["content"] = content
-        item["links"] = list(set(links))  # Remove duplicates
-        item["crawled_at"] = datetime.now()
+        item["links"] = list(set(links))
+        item["crawled_at"] = datetime.utcnow()
 
         yield item
