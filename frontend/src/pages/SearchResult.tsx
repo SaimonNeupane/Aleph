@@ -3,14 +3,22 @@ import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
 import { requestQuery } from "../api/api";
-import { ChevronLeft, ChevronRight, History } from "lucide-react";
+import { ChevronLeft, ChevronRight, History, Mic, Camera } from "lucide-react";
 import { useLocation } from "react-router-dom";
-import { Mic, Camera } from "lucide-react";
 
+// 1. UPDATED INTERFACES
+// Matches the new Django pagination response structure
 interface SearchResultItem {
   url: string;
   title: string;
   content: string;
+}
+
+interface SearchResponse {
+  results: SearchResultItem[];
+  total_pages: number;
+  current_page: number;
+  count: number;
 }
 
 interface SearchHistoryItem {
@@ -26,8 +34,9 @@ export const SearchResults: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const query = searchParams.get("q") || "";
+
+  // State
   const [currentPage, setCurrentPage] = useState(1);
-  const resultsPerPage = 10;
   const searchQueryValue = location.state;
   const [searchQuery, setSearchQuery] = useState(searchQueryValue?.query || "");
   const [isFocused, setIsFocused] = useState(false);
@@ -37,6 +46,8 @@ export const SearchResults: React.FC = () => {
     if (query) {
       addToHistory(query);
       setSearchQuery(query);
+      // Reset to page 1 if the query string changes
+      setCurrentPage(1);
     }
   }, [query]);
 
@@ -64,21 +75,23 @@ export const SearchResults: React.FC = () => {
   };
 
   const handleOpenHistory = () => {
-    // Open history page in new tab
     window.open("/history", "_blank");
   };
 
-  console.log("searchQueryValue:", searchQuery);
-
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["result", query],
-    queryFn: () => requestQuery(query),
-    enabled: true,
+  // 2. UPDATED USEQUERY
+  // - Added currentPage to queryKey (triggers refetch on page change)
+  // - Defined generic type <SearchResponse> for TypeScript safety
+  const { data, isLoading, isError } = useQuery<SearchResponse>({
+    queryKey: ["result", query, currentPage],
+    queryFn: () => requestQuery(query, currentPage),
+    enabled: !!query, // Only run if query exists
+    staleTime: 5000, // Optional: keeps data fresh for 5s
   });
 
   const handleSearch = () => {
-    console.log("Searching for:", searchQuery);
     if (searchQuery.trim()) {
+      // Reset page to 1 on new search
+      setCurrentPage(1);
       navigate(`/search/?q=${encodeURIComponent(searchQuery)}`, {
         state: { query: searchQuery },
       });
@@ -113,24 +126,25 @@ export const SearchResults: React.FC = () => {
     );
   }
 
-  const yes = data && data.length > 0;
+  // 3. UPDATED DATA EXTRACTION
+  // We now read directly from the paginated response
+  const results = data?.results || [];
+  const totalPages = data?.total_pages || 0;
+  const totalCount = data?.count || 0;
+  const hasResults = results.length > 0;
 
-  if (!yes) {
+  if (!hasResults) {
     return (
       <div className="max-w-3xl mx-auto px-4 py-8">
         <div className="text-center text-gray-600 text-lg">
-          Oops! Not crawled yet
+          Oops! No results found.
         </div>
       </div>
     );
   }
 
-  // Pagination logic
-  const totalPages = Math.ceil(data.length / resultsPerPage);
-  const indexOfLastResult = currentPage * resultsPerPage;
-  const indexOfFirstResult = indexOfLastResult - resultsPerPage;
-  const currentResults = data.slice(indexOfFirstResult, indexOfLastResult);
-
+  // 4. UPDATED PAGINATION LOGIC
+  // We no longer slice the array manually because the backend sends only 10 items.
   const handlePageChange = (pageNumber: number) => {
     setCurrentPage(pageNumber);
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -176,8 +190,7 @@ export const SearchResults: React.FC = () => {
         <div className="flex flex-col gap-2">
           <button
             onClick={handleOpenHistory}
-            className="flex items-center gap-2 font-semibold cursor-pointer
-                 hover:underline transition-colors"
+            className="flex items-center gap-2 font-semibold cursor-pointer hover:underline transition-colors"
           >
             <History className="w-5 h-5" />
             <span>History</span>
@@ -185,18 +198,17 @@ export const SearchResults: React.FC = () => {
         </div>
       </div>
       <div className="max-w-3xl mx-auto px-4 relative">
-        {/* Results count */}
+        {/* Results count - Updated to use totalCount */}
         <div className="mb-6 text-sm text-gray-600">
-          About {data.length} results for "{query}"
+          About {totalCount} results for "{query}"
         </div>
 
         <div className="w-full max-w-2xl mb-8">
           <div
-            className={`flex items-center bg-transparent rounded-full px-5 py-3 transition-all duration-200 ${
-              isFocused
-                ? "shadow-lg shadow-black/80"
-                : "shadow-md shadow-black/40"
-            } hover:shadow-lg hover:shadow-black/40`}
+            className={`flex items-center bg-transparent rounded-full px-5 py-3 transition-all duration-200 ${isFocused
+              ? "shadow-lg shadow-black/80"
+              : "shadow-md shadow-black/40"
+              } hover:shadow-lg hover:shadow-black/40`}
           >
             <search className="text-gray-600 w-5 h-5 mr-3" />
 
@@ -231,9 +243,9 @@ export const SearchResults: React.FC = () => {
           </div>
         </div>
 
-        {/* Search results */}
+        {/* Search results - Maps directly over 'results' */}
         <div className="space-y-6">
-          {currentResults.map((item: SearchResultItem, idx: number) => (
+          {results.map((item: SearchResultItem, idx: number) => (
             <div
               key={idx}
               className="bg-white rounded-lg p-4 shadow-sm hover:shadow-md transition-shadow"
@@ -250,7 +262,7 @@ export const SearchResults: React.FC = () => {
                 {item.url}
               </div>
               <p className="text-sm text-gray-700 leading-relaxed">
-                {item.content.slice(0, 100)}
+                {item.content.slice(0, 100)}...
               </p>
             </div>
           ))}
@@ -264,11 +276,10 @@ export const SearchResults: React.FC = () => {
               <button
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
-                className={`p-2 rounded-lg transition-colors ${
-                  currentPage === 1
-                    ? "text-gray-400 cursor-not-allowed"
-                    : "text-blue-600 hover:bg-blue-50"
-                }`}
+                className={`p-2 rounded-lg transition-colors ${currentPage === 1
+                  ? "text-gray-400 cursor-not-allowed"
+                  : "text-blue-600 hover:bg-blue-50"
+                  }`}
                 aria-label="Previous page"
               >
                 <ChevronLeft size={20} />
@@ -282,11 +293,10 @@ export const SearchResults: React.FC = () => {
                   ) : (
                     <button
                       onClick={() => handlePageChange(page as number)}
-                      className={`min-w-10 px-4 py-2 rounded-lg transition-colors ${
-                        currentPage === page
-                          ? "bg-blue-600 text-white font-semibold shadow-sm"
-                          : "text-blue-600 hover:bg-blue-50"
-                      }`}
+                      className={`min-w-10 px-4 py-2 rounded-lg transition-colors ${currentPage === page
+                        ? "bg-blue-600 text-white font-semibold shadow-sm"
+                        : "text-blue-600 hover:bg-blue-50"
+                        }`}
                     >
                       {page}
                     </button>
@@ -298,11 +308,10 @@ export const SearchResults: React.FC = () => {
               <button
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
-                className={`p-2 rounded-lg transition-colors ${
-                  currentPage === totalPages
-                    ? "text-gray-400 cursor-not-allowed"
-                    : "text-blue-600 hover:bg-blue-50"
-                }`}
+                className={`p-2 rounded-lg transition-colors ${currentPage === totalPages
+                  ? "text-gray-400 cursor-not-allowed"
+                  : "text-blue-600 hover:bg-blue-50"
+                  }`}
                 aria-label="Next page"
               >
                 <ChevronRight size={20} />

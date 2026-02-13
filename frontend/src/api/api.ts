@@ -7,8 +7,9 @@ const BaseUrl = axios.create(
   }
 )
 
-export const requestQuery = async (query: string) => {
-  const response = await BaseUrl.get(`/?q=${encodeURIComponent(query)}`)
+// api.ts
+export const requestQuery = async (query: string, page: number) => {
+  // Pass the page parameter to the backend
+  const response = await BaseUrl.get(`/?q=${encodeURIComponent(query)}&page=${page}`)
   return response.data
 }
-
